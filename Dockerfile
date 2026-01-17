@@ -2,14 +2,26 @@ FROM debian:bullseye-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    wkhtmltopdf \
-    xvfb \
-    fonts-liberation \
-    fonts-dejavu-core \
-    fontconfig \
     curl \
     ca-certificates \
+    fontconfig \
+    libfreetype6 \
+    libjpeg62-turbo \
+    libpng16-16 \
+    libx11-6 \
+    libxcb1 \
+    libxext6 \
+    libxrender1 \
+    xfonts-75dpi \
+    xfonts-base \
+    fonts-liberation \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
+
+# Install wkhtmltopdf with patched QT
+RUN curl -L https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb -o /tmp/wkhtmltox.deb \
+    && dpkg -i /tmp/wkhtmltox.deb \
+    && rm /tmp/wkhtmltox.deb
 
 # Install Node.js 18
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \

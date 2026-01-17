@@ -40,28 +40,25 @@ app.post('/generate-pdf', async (req, res) => {
     // Write HTML to file
     await fs.promises.writeFile(htmlFile, html, 'utf8');
 
-    // Build wkhtmltopdf command
+    // Build wkhtmltopdf command with proper options
     const pdfOptions = {
-      pageSize: options.pageSize || 'A4',
-      marginTop: options.marginTop || '10mm',
-      marginRight: options.marginRight || '10mm',
-      marginBottom: options.marginBottom || '10mm',
-      marginLeft: options.marginLeft || '10mm',
-      encoding: 'UTF-8',
-      dpi: options.dpi || 300,
-      imageQuality: options.imageQuality || 94,
-      enableLocalFileAccess: true,
-      ...options
+      'page-size': options.pageSize || 'A4',
+      'margin-top': options.marginTop || '10mm',
+      'margin-right': options.marginRight || '10mm',
+      'margin-bottom': options.marginBottom || '10mm',
+      'margin-left': options.marginLeft || '10mm',
+      'encoding': 'UTF-8',
+      'dpi': options.dpi || 300,
+      'image-quality': options.imageQuality || 94
     };
 
+    // Build options string
     const optionsStr = Object.entries(pdfOptions)
-      .map(([key, value]) => {
-        const kebabKey = key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
-        return `--${kebabKey} ${value}`;
-      })
+      .map(([key, value]) => `--${key} ${value}`)
       .join(' ');
 
-    const command = `wkhtmltopdf ${optionsStr} ${htmlFile} ${pdfFile}`;
+    // Add enable-local-file-access flag (no value)
+    const command = `wkhtmltopdf ${optionsStr} --enable-local-file-access ${htmlFile} ${pdfFile}`;
 
     console.log('Executing:', command);
 
